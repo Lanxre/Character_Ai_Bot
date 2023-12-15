@@ -14,8 +14,6 @@ python -m venv venv
 venv/Scripts/activate
 ```
 
- ᅠ 
-
 ## 📚 Commands
 1. start 
    - initial message
@@ -25,11 +23,9 @@ venv/Scripts/activate
    - end you dialog
 4. delete
    - delete you message which u send
- ᅠ 
-
+ ᅠ
 ## 🔑 INFO
 
 1. Bot work on sqlite db
 2. You need api for gpt answer
 3. You need setup u webhook, use [ngrok](https://ngrok.com/) for free
-
