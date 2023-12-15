@@ -3,6 +3,7 @@ from urllib.parse import parse_qsl
 
 from aiogram.types import Update
 from aiogram.utils.web_app import safe_parse_webapp_init_data
+from amplitude import BaseEvent
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from starlette import status
@@ -12,6 +13,7 @@ from starlette.templating import Jinja2Templates
 
 from bot import telegram_dispatcher, telegram_bot
 from config import webhooks_settings, WEB_DIR, telegram_settings
+from core.configuration.amplitude_client import amplitude_client
 from core.infrastructure.database.models import CharacterUser, Character
 from core.infrastructure.database.repo import RequestsRepo
 from core.infrastructure.database.setup import db_manager
@@ -46,6 +48,13 @@ async def telegram_bot_chat(
 		web_app_init_data = safe_parse_webapp_init_data(
 			token=telegram_settings.bot_token,
 			init_data=parsed_data["_auth"]
+		)
+
+		amplitude_client.track(
+			BaseEvent(
+				event_type="User chosen character",
+				user_id=f"{web_app_init_data.user.id}"
+			)
 		)
 
 		repository = await db_manager.get_repo()

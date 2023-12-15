@@ -35,12 +35,17 @@ class DatabaseSettings(BaseSettings):
 		return f"sqlite+aiosqlite:///{self.name}"
 
 
+class AmplitudeSettings(BaseSettings):
+	model_config = SettingsConfigDict(env_prefix='AMPLITUDE_', env_file="./.env")
+
+	token: str
+
+
 WORK_DIR = Path(__file__).parent
 WEB_DIR = Path(__file__).parent / 'front'
-
-
 
 server_settings = ServerSettings()
 telegram_settings = TelegramSettings()
 webhooks_settings = WebHooksSettings()
 database_settings = DatabaseSettings()
+amplitude_settings = AmplitudeSettings()

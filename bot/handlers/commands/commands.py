@@ -3,9 +3,11 @@ from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, FSInputFile, WebAppInfo, MenuButtonWebApp, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from aiogram.utils.markdown import hbold, hlink
+from amplitude import BaseEvent
 
 from bot import db_manager, telegram_bot
 from config import webhooks_settings
+from core.configuration.amplitude_client import amplitude_client
 from core.infrastructure.database.models import User, TelegramMessage
 from core.internal.external.fetch import fetch_completion
 from logger import TelegramLogger, LogLevel
@@ -24,6 +26,12 @@ async def start_handler(message: Message) -> None:
 			username=message.from_user.username,
 			first_name=message.from_user.first_name,
 			last_name=message.from_user.last_name,
+		)
+		amplitude_client.track(
+			BaseEvent(
+				event_type="Register",
+				user_id=f"{message.from_user.id}"
+			)
 		)
 
 		repository = await db_manager.get_repo()
@@ -106,6 +114,13 @@ async def user_message(message: Message):
 			await message.answer('Ты не выбрал ещё своего персонажа!')
 			return
 
+		amplitude_client.track(
+			BaseEvent(
+				event_type="User send request",
+				user_id=f"{message.from_user.user.id}"
+			)
+		)
+
 		character_user = await repository.character_user.get(user_id=message.from_user.id)
 
 		# session problem == fix
@@ -128,7 +143,21 @@ async def user_message(message: Message):
 			user_message=message.text
 		)
 
+		amplitude_client.track(
+			BaseEvent(
+				event_type="Answer from gpt",
+				user_id=f"{message.from_user.user.id}"
+			)
+		)
+
 		await message.answer(f"{character.name}: {character_message.content}")
+
+		amplitude_client.track(
+			BaseEvent(
+				event_type="Bot send answer",
+				user_id=f"{message.from_user.user.id}"
+			)
+		)
 
 	except Exception as e:
 		logger.error(message="Text handler", error=e)

@@ -1,3 +1,6 @@
+from typing import Optional
+
+from amplitude import Amplitude
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
@@ -8,10 +11,11 @@ from core.internal.events import on_startup, on_shutdown
 class Server:
 	__app: FastAPI
 
-	def __init__(self, app: FastAPI):
+	def __init__(self, app: FastAPI, amp: Optional[Amplitude]):
 		self.__app = app
 		self.__register_routes(app)
 		self.__register_events(app)
+		self.__amp_client = amp
 
 	def get_app(self) -> FastAPI:
 		return self.__app
@@ -19,7 +23,6 @@ class Server:
 	@staticmethod
 	def __static_files(app: FastAPI) -> None:
 		app.mount("/static", StaticFiles(directory="front"), name="static")
-
 
 	@staticmethod
 	def __register_routes(app: FastAPI) -> None:
