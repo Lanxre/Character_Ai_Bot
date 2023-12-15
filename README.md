@@ -14,6 +14,13 @@ python -m venv venv
 venv/Scripts/activate
 ```
 
+## 💻 Start Bot
+```bash
+python main.py
+or
+uvicorn main:create_app
+```
+
 ## 📚 Commands
 1. start 
    - initial message
