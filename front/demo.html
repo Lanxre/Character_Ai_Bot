@@ -1,0 +1,141 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="MobileOptimized" content="176"/>
+    <meta name="HandheldFriendly" content="True"/>
+    <meta name="robots" content="noindex,nofollow"/>
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background-color: #F5F5F5;
+            color: #27A7E7;
+            font-size: 16px;
+            padding: 0;
+            color-scheme: var(--tg-color-scheme);
+            display: flex;
+        }
+        .app-icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+         .app-icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .app-icon {
+            width: 150px;
+            height: 150px;
+            background-color: #00000029;
+            border: 1px solid #27A7E7;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-size: 10px 10px;
+            cursor: pointer;
+
+        }
+
+        .app-icon img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+        }
+
+        .character-box {
+            display: flex;
+            flex-direction: column;
+            color: #27A7E7;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            background-size: cover;
+        }
+
+        .character-name {
+            font: normal normal bold 15px SF Pro;
+        }
+
+
+    </style>
+</head>
+<body style="visibility: hidden;">
+<div class="app-icon-container">
+    {% if characters|length %}
+        {% for character in characters %}
+        <div onclick="sendData({{ character.id }})">
+            <div class="app-icon" style="background:url({{ character.image_url }}); background-size: cover;">
+
+            </div>
+             <div class="character-box">
+                <div class="character-name">{{ character.name }}</div>
+                <div class="character-type">{{ character.type }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+</div>
+
+<script src="https://webappcontent.telegram.org/js/jquery.min.js"></script>
+<script>
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    var initData = Telegram.WebApp.initData || '';
+    var initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
+
+    async function sendData(characterID) {
+        $.ajax(`/character`, {
+            type: 'POST',
+            data: {
+                character_id: characterID,
+                _auth: initData
+            },
+            dataType: 'json',
+            success: function (result) {
+                webviewClose();
+            },
+        });
+    }
+    function webviewClose() {
+        Telegram.WebApp.close();
+    }
+
+    $('body').css('visibility', '');
+    Telegram.WebApp.MainButton
+        .setText('Закрыть')
+        .show()
+        .onClick(function () {
+            webviewClose();
+        });
+
+
+</script>
+</body>
+</html>

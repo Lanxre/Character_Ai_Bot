@@ -1,0 +1,1 @@
+from .bot import bot as telegram_bot, dp as telegram_dispatcher, db_manager
