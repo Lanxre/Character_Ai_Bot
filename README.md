@@ -16,7 +16,7 @@ venv/Scripts/activate
 
 ## 💻 Start Bot
 ```bash
-python main.py
+python ./main.py
 or
 uvicorn main:create_app
 ```
